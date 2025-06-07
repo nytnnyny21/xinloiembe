@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Xin lỗi em</title>
+  <style>
+    body {
+      background-color: pink;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 100px;
+    }
+    #game, #endMessage, #secondMessage, #ticTacToeSection, #playTicTacToeBtn {
+      display: none;
+      margin-top: 30px;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background-color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #ffe6e6;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .cell {
+      width: 80px;
+      height: 80px;
+      font-size: 30px;
+      border: 2px solid #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #ffcce0;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 id="firstMessage">tui biết em đang buồn. em buồn là lỗi của tui. tui xin lỗi bạn nhỏ nhiều lắm</h1>
+  <button onclick="showSecondMessage()">tiếp theo</button>
+
+  <div id="secondMessage">
+    <h2>bây giờ tui sẽ thay thằng ý hò ngu bò kia chơi với em nhe</h2>
+    <div id="game">
+      <h3>chơi oẳn tù xì với tui nè!</h3>
+      <button onclick="play('kéo')">✌️ kéo</button>
+      <button onclick="play('búa')">✊ búa</button>
+      <button onclick="play('bao')">✋ bao</button>
+      <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
+    </div>
+
+    <div id="afterRPS" style="margin-top: 30px;">
+      <p>nếu em chán thì có thể chơi tic tac toe với tui nè</p>
+      <button id="playTicTacToeBtn" onclick="startTicTacToe()">chơi tic tac toe</button>
+    </div>
+  </div>
+
+  <div id="ticTacToeSection">
+    <h3>tic tac toe nè, em đi trước á!</h3>
+    <div class="board" id="board"></div>
+  </div>
+
+  <button style="margin-top: 40px;" onclick="endGame()">kết thúc</button>
+
+  <div id="endMessage">
+    <h2>hy vọng em đã cảm thấy ổn hơn. tui yêu em nhiều lắm đó thanh nguyên. tạm biệt em b</h2>
+  </div>
+
+  <script>
+  function showSecondMessage() {
+    document.querySelector('button').style.display = 'none';
+    document.getElementById('secondMessage').style.display = 'block';
+    document.getElementById('game').style.display = 'block';
+    document.getElementById('playTicTacToeBtn').style.display = 'inline-block';
+  }
+
+  function play(playerChoice) {
+    const choices = ['kéo', 'búa', 'bao'];
+    const botChoice = choices[Math.floor(Math.random() * choices.length)];
+    let result = '';
+
+    if (playerChoice === botChoice) {
+      result = `em chọn ${playerChoice}, tui cũng chọn ${botChoice}. hòa á nhe!`;
+    } else if (
+      (playerChoice === 'kéo' && botChoice === 'bao') ||
+      (playerChoice === 'búa' && botChoice === 'kéo') ||
+      (playerChoice === 'bao' && botChoice === 'búa')
+    ) {
+      result = `em chọn ${playerChoice}, tui chọn ${botChoice}. em thắng rùi đó hehehhehehehe`;
+    } else {
+      result = `em chọn ${playerChoice}, tui chọn ${botChoice}. tui thắng á nhaaaa`;
+    }
+
+    document.getElementById('result').innerText = result;
+  }
+
+  function startTicTacToe() {
+    document.getElementById('ticTacToeSection').style.display = 'block';
+    createBoard();
+  }
+
+  let currentPlayer = 'X'; // Em đi trước
+  let boardState = Array(9).fill(null);
+  let gameOver = false;
+
+  function createBoard() {
+    const board = document.getElementById('board');
+    board.innerHTML = '';
+    boardState = Array(9).fill(null);
+    currentPlayer = 'X';
+    gameOver = false;
+
+    for (let i = 0; i < 9; i++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      cell.dataset.index = i;
+      cell.addEventListener('click', handleMove);
+      board.appendChild(cell);
+    }
+  }
+
+  function handleMove(e) {
+  const index = e.target.dataset.index;
+  if (boardState[index] || gameOver || currentPlayer !== 'X') return;
+
+  boardState[index] = 'X';
+  e.target.innerText = 'X';
+
+  if (checkWin('X')) {
+    alert('em thắng rồi đó! 🥺');
+    gameOver = true;
+    setTimeout(createBoard, 2000); // Tự reset sau 2 giây
+    return;
+  }
+
+  if (!boardState.includes(null)) {
+    alert("Hòa nhen!");
+    gameOver = true;
+    setTimeout(createBoard, 2000);
+    return;
+  }
+
+  currentPlayer = 'O';
+  setTimeout(botMove, 500);
+}
+
+
+  function botMove() {
+  if (gameOver) return;
+
+  const emptyIndices = boardState
+    .map((val, idx) => val === null ? idx : null)
+    .filter(idx => idx !== null);
+
+  const botChoice = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+  boardState[botChoice] = 'O';
+  const cell = document.querySelector(`.cell[data-index='${botChoice}']`);
+  cell.innerText = 'O';
+
+  if (checkWin('O')) {
+    alert('tui thắng nè em hehehhehehehe');
+    gameOver = true;
+    setTimeout(createBoard, 2000);
+    return;
+  }
+
+  if (!boardState.includes(null)) {
+    alert("Hòa nhen!");
+    gameOver = true;
+    setTimeout(createBoard, 2000);
+    return;
+  }
+
+ 
+    currentPlayer = 'X'; // tới lượt em lại rùi đó
+  }
+
+  function checkWin(player) {
+    const winPatterns = [
+      [0,1,2], [3,4,5], [6,7,8],
+      [0,3,6], [1,4,7], [2,5,8],
+      [0,4,8], [2,4,6]
+    ];
+    return winPatterns.some(pattern =>
+      pattern.every(index => boardState[index] === player)
+    );
+  }
+
+  function endGame() {
+    document.getElementById('secondMessage').style.display = 'none';
+    document.getElementById('ticTacToeSection').style.display = 'none';
+    document.getElementById('endMessage').style.display = 'block';
+  }
+</script>
+</body>
+</html>
