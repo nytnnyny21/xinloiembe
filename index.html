@@ -71,10 +71,8 @@
     <div class="board" id="board"></div>
   </div>
 
-  <button style="margin-top: 40px;" onclick="endGame()">kết thúc</button>
-
   <div id="endMessage">
-    <h2>hy vọng em đã cảm thấy ổn hơn. tui yêu em nhiều lắm đó thanh nguyên. tạm biệt em b</h2>
+    <h2>hy vọng em đã cảm thấy ổn hơn. tui yêu em nhiều lắm đó thanh nguyên. tạm biệt em bé</h2>
   </div>
 
   <script>
@@ -140,7 +138,7 @@
   if (checkWin('X')) {
     alert('em thắng rồi đó! 🥺');
     gameOver = true;
-    setTimeout(createBoard, 2000); // Tự reset sau 2 giây
+    setTimeout(createBoard, 1000); // Tự reset sau 2 giây
     return;
   }
 
